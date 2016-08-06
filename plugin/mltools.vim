@@ -34,6 +34,10 @@ call s:default('g:mltc', 'mltc')
 call s:default('g:mltq', 'mltq')
 call s:default('g:mltq_options', ["--nodebug", "--query", "--fuzzy"])
 
+" mlcp variables
+call s:default('g:mlcp', 'mlcp')
+call s:default('g:mlcp_options', ["--nodebug"])
+
 
 " mltools functions
 function! s:run_cmd(cmd)
@@ -74,7 +78,7 @@ endfunction
 function! s:prompt_cm_file()
   let l:cmfile = input(':MltSetCM ', '', 'file')
   redraw!
-  call s:set_cm_file(l:cmfile)
+  return s:set_cm_file(l:cmfile)
 endfunction
 
 
@@ -88,7 +92,11 @@ function! s:mltq()
   if !exists('b:mlt_cm_file')
     if !exists('g:mlt_cm_file')
       echom 'CM file has never been specified!'
-      call s:prompt_cm_file()
+      if s:prompt_cm_file()
+        sleep 1
+        redraw!
+        call s:mltq()
+      endif
       return
     else
       let l:cmfile = g:mlt_cm_file
