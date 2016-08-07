@@ -118,6 +118,46 @@ function! s:mltq()
   call s:run_cmd(l:cmd)
 endfunction
 
+function! Mlcp(findstart, base)
+  if a:findstart
+    let l:line = getline('.')
+    let l:start = col('.') - 1
+    while l:start > 0
+      let l:cur = l:line[l:start - 1]
+      if l:cur =~ '\w' || l:cur =~ "\'"
+        let l:start -= 1
+      elseif l:cur =~ '\.'
+        if l:start > 1 && l:line[l:start - 2] =~ '\.'
+          return -3
+        endif
+        let l:start -= 1
+      else
+        break
+      endif
+    endwhile
+    return l:start
+  endif
+
+  if exists('b:mlt_cm_file')
+    let l:cmfile = b:mlt_cm_file
+  elseif exists('g:mlt_cm_file')
+    let l:cmfile = g:mlt_cm_file
+  else
+    let l:cmfile = ''
+  endif
+
+  let l:cmd_params = [g:mlcp, l:cmfile, bufname('%'), a:base] +
+        \g:mlcp_options
+  let l:cmd = ''
+  for param in l:cmd_params
+    let l:cmd .= param . ' '
+  endfor
+
+  return {'words' : systemlist(l:cmd), 'refresh' : 'always'}
+endfunction
+
+set omnifunc=Mlcp
+
 vnoremap <silent> <Plug>VMltq :<C-U>call <SID>mltq()<CR>
 
 command! -nargs=? -complete=file MltSetCM call s:set_cm_file(<q-args>)
