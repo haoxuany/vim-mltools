@@ -29,14 +29,16 @@ call s:canset('g:mlt_cm_file')
 
 " mltc variables
 call s:default('g:mltc', 'mltc')
+call s:default('g:mltc_options', 
+      \['--nodebug', '--nocolor', '--compile', '--format-vimmake'])
 
 " mltq variables
 call s:default('g:mltq', 'mltq')
-call s:default('g:mltq_options', ["--nodebug", "--query", "--fuzzy"])
+call s:default('g:mltq_options', ['--nodebug', '--query', '--fuzzy'])
 
 " mlcp variables
 call s:default('g:mlcp', 'mlcp')
-call s:default('g:mlcp_options', ["--nodebug"])
+call s:default('g:mlcp_options', ['--nodebug'])
 
 
 " mltools functions
@@ -72,6 +74,7 @@ function! s:set_cm_file(cmfile)
   let g:mlt_cm_file = l:cmfile
   let b:mlt_cm_file = l:cmfile
   echom 'CM file set to ' . l:cmfile
+  call s:mltc_refreshmakeprg()
   return 1
 endfunction
 
@@ -82,6 +85,30 @@ function! s:prompt_cm_file()
 endfunction
 
 
+" mltc function
+function! s:mltc_makeprg()
+  if !exists('b:mlt_cm_file')
+    if !exists('g:mlt_cm_file')
+      let l:compile_file = bufname('%')
+    else
+      let l:compile_file = g:mlt_cm_file
+    endif
+  else
+    let l:compile_file = b:mlt_cm_file
+  endif
+
+  let l:cmd_params = [g:mltc, l:compile_file] + g:mltc_options
+  let l:cmd = ''
+  for param in l:cmd_params
+    let l:cmd .= param . ' '
+  endfor
+
+  return l:cmd
+endfunction
+
+function! s:mltc_refreshmakeprg()
+  let &l:makeprg = s:mltc_makeprg()
+endfunction
 
 " mltq functions
 function! s:get_byte(mark)
@@ -157,6 +184,8 @@ function! Mlcp(findstart, base)
 endfunction
 
 set omnifunc=Mlcp
+
+autocmd BufWinEnter * :call s:mltc_refreshmakeprg()
 
 vnoremap <silent> <Plug>VMltq :<C-U>call <SID>mltq()<CR>
 
