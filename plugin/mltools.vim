@@ -38,7 +38,7 @@ call s:default('g:mltq_options', ['--nodebug', '--query', '--fuzzy'])
 
 " mlcp variables
 call s:default('g:mlcp', 'mlcp')
-call s:default('g:mlcp_options', ['--nodebug'])
+call s:default('g:mlcp_options', ['--nodebug', '--annotate'])
 
 
 " mltools functions
@@ -180,7 +180,17 @@ function! Mlcp(findstart, base)
     let l:cmd .= param . ' '
   endfor
 
-  return {'words' : systemlist(l:cmd), 'refresh' : 'always'}
+  let l:complete_list = systemlist(l:cmd)
+  let l:completion = []
+
+  let l:index = 0
+  while l:index < (len(l:complete_list) / 2)
+    call add(l:completion, {'word' : l:complete_list[l:index * 2],
+                           \'menu' : l:complete_list[l:index * 2 + 1]})
+    let l:index = l:index + 1
+  endwhile
+
+  return {'words' : l:completion}
 endfunction
 
 set omnifunc=Mlcp
