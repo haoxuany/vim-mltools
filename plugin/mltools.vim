@@ -88,7 +88,7 @@ endfunction
 function! s:refresh_mltools()
   call s:mltc_refreshmakeprg()
   if g:mlcp_dotcomplete
-    inoremap <buffer> . .<C-x><C-o>
+    inoremap <buffer> . .<C-x><C-o><C-p>
   endif
 endfunction
 
