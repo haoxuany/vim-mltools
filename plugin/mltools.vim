@@ -39,6 +39,7 @@ call s:default('g:mltq_options', ['--nodebug', '--query', '--fuzzy'])
 " mlcp variables
 call s:default('g:mlcp', 'mlcp')
 call s:default('g:mlcp_options', ['--nodebug', '--annotate'])
+call s:default('g:mlcp_dotcomplete', 1)
 
 
 " mltools functions
@@ -82,6 +83,13 @@ function! s:prompt_cm_file()
   let l:cmfile = input(':MltSetCM ', '', 'file')
   redraw!
   return s:set_cm_file(l:cmfile)
+endfunction
+
+function! s:refresh_mltools()
+  call s:mltc_refreshmakeprg()
+  if g:mlcp_dotcomplete
+    inoremap <buffer> . .<C-x><C-o>
+  endif
 endfunction
 
 
@@ -195,7 +203,7 @@ endfunction
 
 set omnifunc=Mlcp
 
-autocmd BufWinEnter * :call s:mltc_refreshmakeprg()
+autocmd BufWinEnter * :call s:refresh_mltools()
 
 vnoremap <silent> <Plug>VMltq :<C-U>call <SID>mltq()<CR>
 
