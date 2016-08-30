@@ -90,6 +90,7 @@ function! s:refresh_mltools()
   if g:mlcp_dotcomplete
     inoremap <buffer> . .<C-x><C-o><C-p>
   endif
+  nnoremap <buffer> <leader>s :MltSetCM 
 endfunction
 
 
