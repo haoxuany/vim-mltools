@@ -211,6 +211,6 @@ vnoremap <silent> <Plug>VMltq :<C-U>call <SID>mltq()<CR>
 command! -nargs=? -complete=file MltSetCM call s:set_cm_file(<q-args>)
 command! -nargs=0 Mltq call s:mltq()
 
-xmap <leader>q <Plug>VMltq
+xmap <leader>x <Plug>VMltq
 
 " vim: set ft=vim ts=2 sts=2 sw=2 et:
